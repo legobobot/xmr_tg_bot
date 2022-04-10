@@ -1,7 +1,7 @@
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.types.inline_keyboard import InlineKeyboardMarkup
-import sqlite3
 from Db import Database
+from sqlite_db import main_data as mDATA
 
 data = Database()
 # --------Categories---------
@@ -28,12 +28,23 @@ def getKey():
 # -----------------------------------------
 
 
+# def get_girls_key(title):
+#     Girl = InlineKeyboardMarkup(row_width=2)
+#     girls = data.girlkey(title)
+#     for i in girls:
+#         temp = InlineKeyboardButton(
+#             text=(i[0])[:-4], callback_data=i[0])
+#         Girl.add(temp)
+#     Girl.row(back, next)
+#     return Girl
+
+
 def get_girls_key(title):
     Girl = InlineKeyboardMarkup(row_width=2)
-    girls = data.girlkey(title)
+    girls = mDATA.GET_GIRLS_INLINE_KEY(title)
     for i in girls:
         temp = InlineKeyboardButton(
-            text=(i[0])[:-4], callback_data=i[0])
+            text=(i[0]), callback_data=i[0])
         Girl.add(temp)
     Girl.row(back, next)
     return Girl
@@ -53,6 +64,11 @@ del_cat = KeyboardButton("Удалить категорию")
 Admin_back = KeyboardButton("Назад в главное меню")
 admin = ((ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True).row(
     add_file, del_file)).row(add_cat, del_cat)).add(Admin_back)
+
+
+# ------------------buy--------------------
+buybtn = InlineKeyboardMarkup(row_width=3).row(InlineKeyboardButton(
+    text="Назад", callback_data="Back"), InlineKeyboardButton(text="КУПИТЬ", callback_data="buy_arr"))
 
 
 getKey()
