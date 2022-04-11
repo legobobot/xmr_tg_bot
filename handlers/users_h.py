@@ -19,6 +19,10 @@ async def command_start(message: types.Message):
     await bot.send_message(message.from_user.id, "Что будем делать?", reply_markup=key.Inline_key)
 
 
+async def MainMenu(message: types.Message):
+    await bot.send_message(message.from_user.id, "Вы находитесь в главном меню", reply_markup=key.Inline_key)
+
+
 async def admin(message: types.Message):
     await bot.send_message(message.from_user.id, "Вы в меню администратора!\nЧто будем делать?", reply_markup=key.admin)
 
@@ -54,6 +58,7 @@ def register_handlers_users(dp: Dispatcher):
     dp.register_message_handler(command_start, commands=['start'])
     dp.register_message_handler(admin, commands=['admin'])
     dp.register_message_handler(inline, text="Категории")
+    dp.register_message_handler(MainMenu, text="Назад в главное меню")
     dp.register_callback_query_handler(category, text='category')
     dp.register_callback_query_handler(inline_menu_back, text='Back')
     dp.register_callback_query_handler(

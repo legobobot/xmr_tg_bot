@@ -12,11 +12,26 @@ async def sqlite_add_commads(state):
     async with state.proxy() as data:
         cur.execute('INSERT INTO file_v2 VALUES (?, ?, ?, ?, ?)',
                     tuple(data.values()))
-        print("Запись успешно добавлена в таблицу!")
         base.commit()
 
 
 def sqlite_del_file(title):
     cur.execute('DELETE FROM file_v2 WHERE card_name = ?', (title,))
-    print("Лот был успешно удален!")
     base.commit()
+
+
+def sqlite_add_category(name):
+    cur.execute('INSERT INTO Categories(title) VALUES (?) ', (name,))
+    base.commit()
+
+
+def sqlite_del_category(name):
+    cur.execute('DELETE FROM Categories WHERE title=?', (name,))
+    cur.execute('DELETE FROM file_v2 WHERE ID=?', (name,))
+    base.commit()
+
+
+def get_all_user_id():
+    cur.execute('SELECT user_id FROM users')
+    data = cur.fetchall()
+    return data
