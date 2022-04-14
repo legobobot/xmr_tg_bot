@@ -1,9 +1,8 @@
 from aiogram import Dispatcher, types
-from Db import Database as data
-from UsersDB import Users as User
+import sqlite_db.UserDB as user
 import Keyboard as key
 from client import bot
-from sqlite_db import main_data as mdata
+from sqlite_db import main_data as main_data
 
 
 async def help(message: types.Message):
@@ -11,4 +10,4 @@ async def help(message: types.Message):
 
 
 def register_message_help(dp: Dispatcher):
-    dp.register_message_handler(help, text="Помощь")
+    dp.register_message_handler(help, text="✅ Поддержка ✅")
