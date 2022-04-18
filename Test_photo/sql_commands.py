@@ -45,7 +45,6 @@ def add_file(file_id):
     except:
         print(3482)
     finally:
-        print("test_photo было успешно добавлено!")
         base.commit()
 
 

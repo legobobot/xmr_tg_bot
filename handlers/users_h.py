@@ -3,6 +3,7 @@ from sqlite_db import UserDB as user
 import Keyboard as key
 from client import bot
 from sqlite_db import main_data as data
+from sqlite_db import moneyDB as money
 
 
 def Check_Call(call):
@@ -13,6 +14,7 @@ def Check_Call(call):
 
 
 async def command_start(message: types.Message):
+    money.add_referal(message.from_user.id, message.get_args())
     user.Check_id(message.from_user.id)
     await bot.send_message(message.from_user.id, f"*{message.from_user.first_name}*, приветствуем Вам в нашем боте", parse_mode='MarkdownV2')
     await bot.send_message(message.from_user.id, "Что будем делать?", reply_markup=key.Inline_key)
@@ -54,11 +56,26 @@ async def some_callback_handler(callback_query: types.CallbackQuery):
         await data.print_card(callback_query.data, callback_query.from_user.id)
 
 
+async def profile(message: types.Message):
+    await bot.send_message(message.from_user.id, "📱 <b>Ваш профиль:</b>\n" +
+                           "➖➖➖➖➖➖➖➖➖➖➖➖➖\n" +
+                           f"🔑 Мой ID: <code>{message.from_user.id}</code>\n" +
+                           f"👤 Логин @{message.from_user.username}\n" +
+                           "➖➖➖➖➖➖➖➖➖➖➖➖➖\n" +
+                           f"💳 Баланс: <code>{money.get_balans(message.from_user.id)}руб</code>\n" +
+                           f"💵 Всего пополнено: <code>{money.get_all_money(message.from_user.id)}руб</code>\n" +
+                           f"🎁 Куплено товаров: <code>{money.get_purchased(message.from_user.id)}шт</code>\n" +
+                           f"🔗Активных рефералов: <b><code>{money.get_referal(message.from_user.id)}</code></b>\n" +
+                           f"💎Ваша реферальная ссылка: https://t.me/ASHITAnonimChat_Bot?start={message.from_user.id}",
+                           disable_web_page_preview=True, parse_mode='HTML', reply_markup=key.profile)
+
+
 def register_handlers_users(dp: Dispatcher):
     dp.register_message_handler(command_start, commands=['start'])
     dp.register_message_handler(admin, commands=['admin'])
     dp.register_message_handler(inline, text="🛒 Товар")
     dp.register_message_handler(MainMenu, text="Назад в главное меню")
+    dp.register_message_handler(profile, text="📱 Профиль")
     dp.register_callback_query_handler(category, text='category')
     dp.register_callback_query_handler(inline_menu_back, text='Back')
     dp.register_callback_query_handler(

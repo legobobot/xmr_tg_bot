@@ -1,3 +1,4 @@
+from audioop import add
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.types.inline_keyboard import InlineKeyboardMarkup
 from sqlite_db import main_data as data
@@ -9,9 +10,26 @@ back = InlineKeyboardButton(
 # ----------Обычные клавиши---------------
 help = KeyboardButton("✅ Поддержка ✅")
 inline = KeyboardButton("🛒 Товар")
-preview_send = KeyboardButton("🆓 FREE 🆓")
-Inline_key = (ReplyKeyboardMarkup(resize_keyboard=True).row(
-    inline, preview_send)).add(help)
+preview_send = KeyboardButton("🔥🔥🔥 Халявные Нюдсы 🔥🔥🔥")
+profile = KeyboardButton("📱 Профиль")
+faq = KeyboardButton("ℹ️ FAQ")
+balans = KeyboardButton("💰 Пополнить баланс")
+
+Inline_key = ((ReplyKeyboardMarkup(resize_keyboard=True).row(
+    inline, profile)).add(preview_send)).row(help, faq)
+
+# Inline_key = ((ReplyKeyboardMarkup(resize_keyboard=True).row(
+#     inline, preview_send, faq)).row(profile, balans)).add(help)
+
+
+# ---------profile---------------------
+add_balans = InlineKeyboardButton(text="💵Пополнить", callback_data="add_money")
+my_shopping = InlineKeyboardButton(
+    text="🛒Мои покупки", callback_data="my_shop")
+
+profile = InlineKeyboardMarkup(row_width=2).row(add_balans, my_shopping)
+
+little_money = InlineKeyboardMarkup(row_width=1).add(add_balans)
 # ----------admin------------------------
 add_file = KeyboardButton("Добавить файл")
 del_file = KeyboardButton("Удалить файл")
@@ -27,7 +45,7 @@ buybtn = InlineKeyboardMarkup(row_width=3).row(InlineKeyboardButton(
 # -----------------help---------------------
 errorbtn = KeyboardButton("📞 Связь с поддержкой")
 review = KeyboardButton("📝 Оставить отзыв")
-help = (ReplyKeyboardMarkup(resize_keyboard=True).row(
+help = (ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True).row(
     errorbtn, review)).add(Admin_back)
 # ----------func--------------------------
 

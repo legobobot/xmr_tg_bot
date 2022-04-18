@@ -16,7 +16,18 @@ def GET_GIRLS_INLINE_KEY(title):
     return a
 
 
+def write_last_girl(last_girl, id):
+    try:
+        cur.execute('UPDATE users SET last_girl=? WHERE user_id=?',
+                    (last_girl, id))
+    except sqlite3.Error as err:
+        print("sqlite Error: ", err)
+    finally:
+        base.commit()
+
+
 async def print_card(title, id):
+    write_last_girl(title, id)
     for row in cur.execute('SELECT DISTINCT preview_id, description FROM file_v2 WHERE card_name=?', (title,)):
         await bot.send_photo(id, photo=row[0], caption=row[1], reply_markup=key.buybtn)
 

@@ -1,11 +1,7 @@
 import sqlite3
 
-
-def sql_start():
-    global base, cur
-    base = sqlite3.connect("Files.db")
-    cur = base.cursor()
-    base.commit()
+base = sqlite3.connect("Files.db")
+cur = base.cursor()
 
 
 async def sqlite_add_commads(state):

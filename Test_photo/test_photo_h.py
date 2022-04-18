@@ -32,7 +32,7 @@ async def more(message: types.Message):
         await bot.send_photo(message.from_user.id, photo=photo, caption=f'_Осталось бесплатный фото:_ *{(sq.max_s_photo() - sq.get_user_try_number(message.from_user.id))+2}*', parse_mode='MarkdownV2')
     else:
         await bot.send_message(message.from_user.id,
-                               "*Ваши бесплатные фото закончились*\n\nВы можете ✅*купить один из паков*✅, чтобы порадовать себя, либо же ждать следующего обновления категории ♻️_*Бесплатное*_♻️",
+                               "*Ваши бесплатные фото закончились*\n\nВы можете ✅*купить один из паков*✅, чтобы порадовать себя, либо же ждать следующего обновления категории \n♻️_*Бесплатное*_♻️",
                                parse_mode='MarkdownV2')
 
 
@@ -93,7 +93,8 @@ async def upload_file(message: types.Message, state=FSMContext):
 
 
 def register_test_photo(dp: Dispatcher):
-    dp.register_message_handler(start_test, text="🆓 FREE 🆓")
+    dp.register_message_handler(
+        start_test, text="🔥🔥🔥 Халявные Нюдсы 🔥🔥🔥")
     dp.register_message_handler(back_to_menu, text="↩️ Главное меню")
     dp.register_message_handler(more, text="🔞Nudes🔞")
     dp.register_message_handler(
