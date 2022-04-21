@@ -1,4 +1,3 @@
-from audioop import add
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.types.inline_keyboard import InlineKeyboardMarkup
 from sqlite_db import main_data as data
@@ -87,6 +86,14 @@ def get_girls_key(title):
         Girl.add(temp)
     Girl.row(back)
     return Girl
+
+
+def buy_menu(isUrl=True, url="", bill=""):
+    qiwiMenu = InlineKeyboardMarkup(row_width=1)
+    if isUrl:
+        qiwiMenu.insert(InlineKeyboardButton(text="Ссылка на оплату", url=url))
+    qiwiMenu.insert(InlineKeyboardButton(text="Проверить оплату", callback_data="check_"+bill))
+    return qiwiMenu
 
 
 # ------auto_start---------

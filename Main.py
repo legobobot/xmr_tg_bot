@@ -1,6 +1,6 @@
 from aiogram import executor
 import logging
-from handlers import users_h, help_h, buy, money_h
+from handlers import users_h, help_h, buy, money_h, qiwi
 from handlers.admin_handlers import admin_add_file, admin_del_file, admin_add_category, admin_del_category
 from Test_photo import test_photo_h
 from client import dp, bot
@@ -16,6 +16,7 @@ async def on_startup(_):
     #     await bot.send_message(
     #         i[0], "<strong>Бот был перезагружен с целью обновления функционала и редактирования категорий</strong> \n\n<b>Пожалуйста, пропишите /start для исключения ошибок работы функций бота!</b> \n\n<i>Подробнее об обновлении или поплнении Вы можете узнать в канале</i> <a href='t.me/os_store_update'>OS_Store update</a>", parse_mode='HTML')
 
+qiwi.register_buy_handler(dp)
 money_h.register_new_referal(dp)
 buy.register_pay_handler(dp)
 test_photo_h.register_test_photo(dp)

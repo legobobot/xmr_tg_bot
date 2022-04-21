@@ -71,3 +71,35 @@ def get_file(id):
                 (user.get_last_girl(id),))
     for i in cur.fetchone():
         return i
+
+# ----------------------------------------------------
+
+
+def add_payments_par(user_id=None, money=None, bill_id=None):
+    cur.execute('INSERT INTO buy (user_id, money, bill_id) VALUES (?, ?, ?)',
+                (user_id, money, bill_id,))
+    base.commit()
+
+
+def get_payments_par(bill_id):
+    result = cur.execute(
+        'SELECT * FROM buy WHERE bill_id =?', (bill_id)).fetchmany(1)
+    return False if not bool(len(result)) else result
+
+
+def get_bill(user_id):
+    cur.execute('SELECT bill_id FROM buy WHERE user_id=?', (user_id,))
+    for i in cur.fetchone():
+        return i
+
+
+def get_added_money(user_id):
+    cur.execute('SELECT money FROM buy WHERE user_id=?', (user_id,))
+    for i in cur.fetchone():
+        return i
+
+
+def delete_bill_id(user_id):
+    bill_id = get_bill(user_id)
+    cur.execute('DELETE FROM buy WHERE bill_id=?', (bill_id,))
+    base.commit()
