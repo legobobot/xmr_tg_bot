@@ -40,12 +40,8 @@ def send_file_prev(ID):
 
 
 def add_file(file_id):
-    try:
-        cur.execute('INSERT INTO test_data(image_id) VALUES(?)', (file_id, ))
-    except:
-        print(3482)
-    finally:
-        base.commit()
+    cur.execute('INSERT INTO test_data(image_id) VALUES(?)', (file_id, ))
+    base.commit()
 
 
 def del_file(image_id):

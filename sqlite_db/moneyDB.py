@@ -1,7 +1,8 @@
 import sqlite3
 from sqlite_db import UserDB as user
+from client import DataBase
 
-base = sqlite3.connect("Files.db")
+base = sqlite3.connect(DataBase)
 cur = base.cursor()
 
 # get_commands-------
