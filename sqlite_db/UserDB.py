@@ -1,7 +1,7 @@
 import sqlite3
+from client import DataBase
 
-
-base = sqlite3.connect("Files.db")
+base = sqlite3.connect(DataBase)
 cur = base.cursor()
 
 
