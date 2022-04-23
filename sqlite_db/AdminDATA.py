@@ -32,3 +32,20 @@ def get_all_user_id():
     cur.execute('SELECT user_id FROM users')
     data = cur.fetchall()
     return data
+
+
+def get_today_pay():
+    cur.execute('SELECT SUM(money) FROM buy')
+    for i in cur.fetchone():
+        return i
+
+
+def get_all_orders():
+    cur.execute('SELECT COUNT(money) FROM buy')
+    for i in cur.fetchone():
+        return i
+
+
+def del_today_stat():
+    cur.execute('DELETE FROM buy')
+    base.commit()

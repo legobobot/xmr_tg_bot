@@ -13,20 +13,15 @@ preview_send = KeyboardButton("🔥🔥🔥 Халявные Нюдсы 🔥🔥
 profile = KeyboardButton("📱 Профиль")
 faq = KeyboardButton("ℹ️ FAQ")
 balans = KeyboardButton("💰 Пополнить баланс")
+referbtn = KeyboardButton("💰 Хочу заработать 💰")
 
-Inline_key = ((ReplyKeyboardMarkup(resize_keyboard=True).row(
-    inline, profile)).add(preview_send)).row(help, faq)
-
-# Inline_key = ((ReplyKeyboardMarkup(resize_keyboard=True).row(
-#     inline, preview_send, faq)).row(profile, balans)).add(help)
-
+Inline_key = (((ReplyKeyboardMarkup(resize_keyboard=True).row(
+    inline, profile)).add(preview_send)).row(help, faq)).add(referbtn)
 
 # ---------profile---------------------
 add_balans = InlineKeyboardButton(text="💵Пополнить", callback_data="add_money")
-my_shopping = InlineKeyboardButton(
-    text="🛒Мои покупки", callback_data="my_shop")
 
-profile = InlineKeyboardMarkup(row_width=2).row(add_balans, my_shopping)
+profile = InlineKeyboardMarkup(row_width=2).add(add_balans)
 
 little_money = InlineKeyboardMarkup(row_width=1).add(add_balans)
 # ----------admin------------------------
@@ -36,7 +31,8 @@ add_cat = KeyboardButton("Добавить категорию")
 del_cat = KeyboardButton("Удалить категорию")
 test_photo = KeyboardButton("Редактировать превью фотографии")
 Admin_back = KeyboardButton("Назад в главное меню")
-admin = (((ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True).row(
+stat = KeyboardButton("Статистика")
+admin = ((((ReplyKeyboardMarkup(resize_keyboard=True).add(stat)).row(
     add_file, del_file)).row(add_cat, del_cat)).add(test_photo)).add(Admin_back)
 # ------------------buy--------------------
 buybtn = InlineKeyboardMarkup(row_width=3).row(InlineKeyboardButton(
@@ -46,6 +42,12 @@ errorbtn = KeyboardButton("📞 Связь с поддержкой")
 review = KeyboardButton("📝 Оставить отзыв")
 help = (ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True).row(
     errorbtn, review)).add(Admin_back)
+# --------------------------------------------
+statistic = KeyboardButton("Статистика за сегодня")
+back_to_one = KeyboardButton("Назад")
+clear = KeyboardButton("Очистить")
+statbtn = (ReplyKeyboardMarkup(
+    resize_keyboard=True).add(statistic)).add(clear, back_to_one)
 # ----------func--------------------------
 
 
@@ -92,7 +94,8 @@ def buy_menu(isUrl=True, url="", bill=""):
     qiwiMenu = InlineKeyboardMarkup(row_width=1)
     if isUrl:
         qiwiMenu.insert(InlineKeyboardButton(text="Ссылка на оплату", url=url))
-    qiwiMenu.insert(InlineKeyboardButton(text="Проверить оплату", callback_data="check_"+bill))
+    qiwiMenu.insert(InlineKeyboardButton(
+        text="Проверить оплату", callback_data="check_"+bill))
     return qiwiMenu
 
 

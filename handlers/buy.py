@@ -2,7 +2,6 @@ from aiogram import Dispatcher, types
 from sqlite_db import UserDB as user
 import Keyboard as key
 from client import bot
-from sqlite_db import main_data as data
 from sqlite_db import moneyDB as money
 
 
@@ -20,8 +19,9 @@ async def process_buy_command(call: types.CallbackQuery):
     if(int(money.get_balans(call.from_user.id)) >= girl):
         money.add_purchased(call.from_user.id)
         money.minus_money(call.from_user.id, girl)
-        await bot.send_message(call.from_user.id, "Ваша покупка была успешно совершена!")
-        await bot.send_document(call.from_user.id, document=money.get_file(call.from_user.id), caption="Вот Ваш файл\n\n*Спасибо за покупку*", parse_mode='MarkdownV2')
+        await bot.send_message(call.from_user.id, "<b>Ваша покупка была успешно совершена!</b>", parse_mode='HTML')
+        await bot.send_message(call.from_user.id, "<i>Загрузка файла....</i>", parse_mode='HTML')
+        await bot.send_document(call.from_user.id, document=money.get_file(call.from_user.id), caption="<b>Ваш архив был успешно загружен!</b>\nСпасибо за покупку, дрочите на здоровье😘", parse_mode='HTML')
     else:
         await bot.send_message(call.from_user.id, "На вашем счете недостаточно средств!", reply_markup=key.little_money)
 
