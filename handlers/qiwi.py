@@ -7,8 +7,13 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 from client import bot, QIWI_TOKEN
 from sqlite_db import moneyDB as money
 from glQiwiApi import QiwiP2PClient
+import random
+import datetime
 
-qiwi_p2p_client = QiwiP2PClient(secret_p2p=QIWI_TOKEN)
+qiwi_p2p_client = QiwiP2PClient(
+    secret_p2p=QIWI_TOKEN,
+    shim_server_url="qiwi-proxy.us-east-2.elasticbeanstalk.com/proxy/p2p/{0}",
+)
 
 
 def is_number(_str):
@@ -34,9 +39,16 @@ async def set_money(message: types.Message, state=FSMContext):
 
 
 async def handle_creation_of_payment(message: types.Message, state: FSMContext):
-    if is_number(message.text) == True and int(message.text) >= 10:
+    if is_number(message.text) == True and int(message.text) >= 0:
         async with qiwi_p2p_client:
-            bill = await qiwi_p2p_client.create_p2p_bill(amount=message.text)
+            transaction_id = (
+                str(message.from_user.id) + "_" + str(random.randint(100000, 999999))
+            )
+            bill = await qiwi_p2p_client.create_p2p_bill(
+                amount=message.text,
+                comment=f"Код вашей операции:\n{transaction_id}",
+                expire_at=datetime.datetime.today() + datetime.timedelta(minutes=25),
+            )
             money.add_payments_par(
                 user_id=message.from_user.id, money=message.text, bill_id=bill.id
             )
@@ -45,12 +57,12 @@ async def handle_creation_of_payment(message: types.Message, state: FSMContext):
             tt["bill_id"] = bill.id
         await bot.send_message(
             message.from_user.id,
-            text=f"Ссылка для пополнения баланса:\n {bill.pay_url}\n\nВы можете пополнить баланс в течение <b>45 минут</b>!!!",
+            text=f"Ссылка для пополнения баланса:\n {bill.pay_url}\n<i>Форма оплаты будет доступна в течение</i> <b>25 минут</b>!!!",
             parse_mode="HTML",
             reply_markup=InlineKeyboardMarkup(row_width=1).row(
-                InlineKeyboardButton(text="Отменить", callback_data="CANCEL_PAY"),
-                InlineKeyboardButton(text="ОПЛАТИТЬ", url=bill.pay_url),
-                InlineKeyboardButton(text="Проверить", callback_data="CHECK_PAY"),
+                InlineKeyboardButton(text="❌ Отменить", callback_data="CANCEL_PAY"),
+                InlineKeyboardButton(text="💰 ОПЛАТИТЬ", url=bill.pay_url),
+                InlineKeyboardButton(text="🔍 Проверить", callback_data="CHECK_PAY"),
             ),
         )
         await FSMqiwi.next()
@@ -69,14 +81,23 @@ async def handle_successful_payment(call: types.CallbackQuery, state: FSMContext
     async with state.proxy() as data:
         bill: bill = data.get("bill")
         pay_money: pay_money = data.get("set_money")
+        id: id = data.get("bill_id")
     if await qiwi_p2p_client.check_if_bill_was_paid(bill):
+        await call.answer("Оплачено!")
         await bot.send_message(
             call.from_user.id,
-            f"Вы успешно пополнили свой счет на <code>{pay_money}</code> рублей",
+            f"✅ <b>Успешное пополнение баланса!</b>\n"
+            + f"➖➖➖➖➖➖➖➖➖➖➖➖➖\n"
+            + f"🧑‍💻 <b>Пользователь:</b> @{call.from_user.username}\n"
+            + f"💵 <b>Сумма пополнения:</b> <code>{pay_money}</code> руб\n"
+            + f"📝 <b>ID операции:</b> <code>{call.from_user.id}_{id}</code>\n"
+            + f"➖➖➖➖➖➖➖➖➖➖➖➖➖\n"
+            + f"🛍 <b>Удачных покупок!</b>",
             parse_mode="HTML",
         )
         money.add_money(call.from_user.id, money.get_added_money(call.from_user.id))
         await state.finish()
+
     else:
         await call.answer("Не оплачено!")
 

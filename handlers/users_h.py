@@ -1,9 +1,10 @@
 from aiogram import Dispatcher, types
 from sqlite_db import UserDB as user
 import Keyboard as key
-from client import bot
+from client import bot, ADMIN_ID
 from sqlite_db import main_data as data
 from sqlite_db import moneyDB as money
+from handlers.FAQ_h import keyboard
 
 
 def Check_Call(call):
@@ -14,15 +15,22 @@ def Check_Call(call):
 
 
 async def command_start(message: types.Message):
-    if message.get_args() != "":
-        user.Check_id(message.from_user.id, message.get_args())
-    else:
-        user.Check_id(message.from_user.id)
     await bot.send_message(
         message.from_user.id,
-        f"*{message.from_user.first_name}*, приветствуем Вам в нашем боте",
+        f"*{message.from_user.first_name}*, приветствуем Вас в нашем боте",
         parse_mode="MarkdownV2",
     )
+    if message.get_args() != "":
+        user.Check_id(message.from_user.id, message.get_args())
+        await bot.send_message(
+            message.from_user.id,
+            f'{message.from_user.first_name}, посколькую Вы впервые зашли в магазин <a href="https://t.me/OS_store_bot">OS Store</a>, пожауйста, ознакомьтесь с разделом "FAQ" для понимания функционала бота!',
+            parse_mode="HTML",
+            reply_markup=keyboard,
+        )
+    else:
+        user.Check_id(message.from_user.id)
+
     await bot.send_message(
         message.from_user.id, "Что будем делать?", reply_markup=key.Inline_key
     )
@@ -37,12 +45,13 @@ async def MainMenu(message: types.Message):
 
 
 async def admin(message: types.Message):
-    await bot.send_message(
-        message.from_user.id,
-        "Вы в _*меню администратора*_\nЧто будем делать?",
-        parse_mode="MarkdownV2",
-        reply_markup=key.admin,
-    )
+    if message.from_user.id == ADMIN_ID:
+        await bot.send_message(
+            message.from_user.id,
+            "Вы в _*меню администратора*_\nЧто будем делать?",
+            parse_mode="MarkdownV2",
+            reply_markup=key.admin,
+        )
 
 
 async def inline(message: types.Message):

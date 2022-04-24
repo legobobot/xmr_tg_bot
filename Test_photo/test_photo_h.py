@@ -1,9 +1,8 @@
 from aiogram import Dispatcher, types
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.types.inline_keyboard import InlineKeyboardMarkup
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
-import sqlite_db.UserDB as user
 from Test_photo import key as test_key
 from Test_photo import sql_commands as sq
 from client import bot

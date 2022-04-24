@@ -16,11 +16,13 @@ logging.basicConfig(level=logging.INFO)
 
 
 async def on_startup(_):
-    pass
-    # all_users = AdminDATA.get_all_user_id()
-    # for i in all_users:
-    #     await bot.send_message(
-    #         i[0], "<strong>Бот был перезагружен с целью обновления функционала и редактирования категорий</strong> \n\n<b>Пожалуйста, пропишите /start для исключения ошибок работы функций бота!</b> \n\n<i>Подробнее об обновлении или поплнении Вы можете узнать в канале</i> <a href='t.me/os_store_update'>OS_Store update</a>", parse_mode='HTML')
+    all_users = AdminDATA.get_all_user_id()
+    for i in all_users:
+        await bot.send_message(
+            i[0],
+            "<b>Бот был перезагружен с целью обновления функционала и редактирования категорий</b> \n\n<b>Пожалуйста, пропишите /start для исключения ошибок работы функций бота!</b> \n\n<i>Подробнее об обновлении или поплнении Вы можете узнать в канале</i> <a href='t.me/os_store_update'>OS Store ОБНОВЛЕНИЯ</a>",
+            parse_mode="HTML",
+        )
 
 
 FAQ_h.register_FAQ_information(dp)

@@ -1,11 +1,12 @@
 from aiogram import Dispatcher, types
 import Keyboard as key
-from client import bot
+from client import bot, ADMIN_ID
 from sqlite_db import AdminDATA as admin
 
 
 async def statistic(message: types.Message):
-    await bot.send_message(message.from_user.id, "Вы в меню статистики бота!", reply_markup=key.statbtn)
+    if message.from_user.id == ADMIN_ID:
+        await bot.send_message(message.from_user.id, "Вы в меню статистики бота!", reply_markup=key.statbtn)
 
 
 async def state(message: types.Message):

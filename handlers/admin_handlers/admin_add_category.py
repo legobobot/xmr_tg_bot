@@ -2,7 +2,7 @@ from aiogram import Dispatcher, types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 import Keyboard as key
-from client import bot
+from client import bot, ADMIN_ID
 from sqlite_db import AdminDATA
 
 
@@ -11,8 +11,9 @@ class FSMAdmin(StatesGroup):
 
 
 async def select_category(message: types.Message):
-    await FSMAdmin.add_category.set()
-    await bot.send_message(message.from_user.id, "Напишите название новой категории товаров")
+    if message.from_user.id == ADMIN_ID:
+        await FSMAdmin.add_category.set()
+        await bot.send_message(message.from_user.id, "Напишите название новой категории товаров")
 
 
 async def add_category(message: types.Message, state=FSMContext):

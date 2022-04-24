@@ -5,27 +5,29 @@ from client import bot
 
 
 user_agreement = InlineKeyboardButton(
-    text="Пользовательское соглашение",
+    text="📔 Пользовательское соглашение",
     url="https://telegra.ph/Publichnaya-oferta-na-zaklyuchenie-licenzionnogo-dogovora-04-23",
 )
-our_projects = InlineKeyboardButton(text="Наши проекты", callback_data="our_projects")
+our_projects = InlineKeyboardButton(text="🌐 Наши проекты", callback_data="our_projects")
 referal_system = InlineKeyboardButton(
-    text="Реферальная система",
+    text="👫 Реферальная система",
     url="https://telegra.ph/Kak-zarabotat-na-referalnoj-sisteme-04-23",
 )
 keyboard = InlineKeyboardMarkup(row_width=1).add(
     our_projects, referal_system, user_agreement
 )
 # button_projects-------------------------
-free_group = InlineKeyboardButton(text="Отборный СОК", url="https://t.me/otborniy_SOK")
+free_group = InlineKeyboardButton(
+    text="🔞 Отборный СОК", url="https://t.me/otborniy_SOK"
+)
 VIP_group = InlineKeyboardButton(
-    text="VIP Группа", url="https://t.me/Otbotniy_SOK_VIP_bot"
+    text="❇️ VIP Группа", url="https://t.me/Otbotniy_SOK_VIP_bot"
 )
-reviews = InlineKeyboardButton(text="Отзывы", url="https://t.me/otzivi_os_store")
+reviews = InlineKeyboardButton(text="⁉️ Отзывы", url="https://t.me/otzivi_os_store")
 updateG = InlineKeyboardButton(
-    text="Обновления бота", url="https://t.me/os_store_update"
+    text="♻️ Обновления бота", url="https://t.me/os_store_update"
 )
-back = InlineKeyboardButton(text="Назад", callback_data="FAQ_menu")
+back = InlineKeyboardButton(text="↩️ Назад", callback_data="FAQ_menu")
 project = InlineKeyboardMarkup(row_width=1).add(
     free_group, VIP_group, reviews, updateG, back
 )

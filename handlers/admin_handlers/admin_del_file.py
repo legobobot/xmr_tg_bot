@@ -3,7 +3,7 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.dispatcher.filters import Text
 import Keyboard as key
-from client import bot
+from client import bot, ADMIN_ID
 from sqlite_db import AdminDATA as adata
 
 
@@ -11,12 +11,18 @@ class FSMAdmin(StatesGroup):
     one = State()
     file = State()
 
+
 # ---------add_file-----------------------
 
 
 async def select_category(message: types.Message):
-    await FSMAdmin.one.set()
-    await bot.send_message(message.from_user.id, "Выберите категорию, в которой хотите удалить лот", reply_markup=key.categories)
+    if message.from_user.id == ADMIN_ID:
+        await FSMAdmin.one.set()
+        await bot.send_message(
+            message.from_user.id,
+            "Выберите категорию, в которой хотите удалить лот",
+            reply_markup=key.categories,
+        )
 
 
 async def select_file(callback_query: types.CallbackQuery, state=FSMContext):
@@ -40,10 +46,10 @@ async def cancel(message: types.Message, state=FSMContext):
 
 
 def register_handlers_admin(dp: Dispatcher):
-    dp.register_message_handler(
-        select_category, text="Удалить файл", state=None)
+    dp.register_message_handler(select_category, text="Удалить файл", state=None)
     dp.register_callback_query_handler(select_file, state=FSMAdmin.one)
     dp.register_callback_query_handler(del_file, state=FSMAdmin.file)
-    dp.register_message_handler(cancel, state="*", commands='отмена')
-    dp.register_message_handler(cancel, Text(
-        equals='отмена', ignore_case=True), state="*")
+    dp.register_message_handler(cancel, state="*", commands="отмена")
+    dp.register_message_handler(
+        cancel, Text(equals="отмена", ignore_case=True), state="*"
+    )

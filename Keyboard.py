@@ -1,11 +1,16 @@
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup
+from aiogram.types import (
+    ReplyKeyboardMarkup,
+    KeyboardButton,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+)
 from aiogram.types.inline_keyboard import InlineKeyboardMarkup
 from sqlite_db import main_data as data
+
 # --------Categories---------
 categories = InlineKeyboardMarkup(row_width=1)
 Girl = InlineKeyboardMarkup(row_width=2)
-back = InlineKeyboardButton(
-    text="Назад", callback_data="category", row_width=1)
+back = InlineKeyboardButton(text="Назад", callback_data="category", row_width=1)
 # ----------Обычные клавиши---------------
 help = KeyboardButton("✅ Поддержка ✅")
 inline = KeyboardButton("🛒 Товар")
@@ -15,11 +20,16 @@ faq = KeyboardButton("ℹ️ FAQ")
 balans = KeyboardButton("💰 Пополнить баланс")
 referbtn = KeyboardButton("💰 Хочу заработать 💰")
 
-Inline_key = (((ReplyKeyboardMarkup(resize_keyboard=True).row(
-    inline, profile)).add(preview_send)).row(help, faq)).add(referbtn)
+Inline_key = (
+    (
+        (ReplyKeyboardMarkup(resize_keyboard=True).row(inline, profile)).add(
+            preview_send
+        )
+    ).row(help, faq)
+).add(referbtn)
 
 # ---------profile---------------------
-add_balans = InlineKeyboardButton(text="💵Пополнить", callback_data="add_money")
+add_balans = InlineKeyboardButton(text="💵Пополнить (QIWI)", callback_data="add_money")
 
 profile = InlineKeyboardMarkup(row_width=2).add(add_balans)
 
@@ -32,22 +42,35 @@ del_cat = KeyboardButton("Удалить категорию")
 test_photo = KeyboardButton("Редактировать превью фотографии")
 Admin_back = KeyboardButton("Назад в главное меню")
 stat = KeyboardButton("Статистика")
-admin = ((((ReplyKeyboardMarkup(resize_keyboard=True).add(stat)).row(
-    add_file, del_file)).row(add_cat, del_cat)).add(test_photo)).add(Admin_back)
+admin = (
+    (
+        (
+            (ReplyKeyboardMarkup(resize_keyboard=True).add(stat)).row(
+                add_file, del_file
+            )
+        ).row(add_cat, del_cat)
+    ).add(test_photo)
+).add(Admin_back)
 # ------------------buy--------------------
-buybtn = InlineKeyboardMarkup(row_width=3).row(InlineKeyboardButton(
-    text="Назад", callback_data="Back"), InlineKeyboardButton(text="КУПИТЬ", callback_data="buy_arr"))
+buybtn = InlineKeyboardMarkup(row_width=3).row(
+    InlineKeyboardButton(text="Назад", callback_data="Back"),
+    InlineKeyboardButton(text="КУПИТЬ", callback_data="buy_arr"),
+)
 # -----------------help---------------------
 errorbtn = KeyboardButton("📞 Связь с поддержкой")
 review = KeyboardButton("📝 Оставить отзыв")
-help = (ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True).row(
-    errorbtn, review)).add(Admin_back)
+help = (
+    ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True).row(
+        errorbtn, review
+    )
+).add(Admin_back)
 # --------------------------------------------
 statistic = KeyboardButton("Статистика за сегодня")
 back_to_one = KeyboardButton("Назад")
 clear = KeyboardButton("Очистить")
-statbtn = (ReplyKeyboardMarkup(
-    resize_keyboard=True).add(statistic)).add(clear, back_to_one)
+statbtn = (ReplyKeyboardMarkup(resize_keyboard=True).add(statistic)).add(
+    clear, back_to_one
+)
 # ----------func--------------------------
 
 
@@ -55,8 +78,7 @@ def getKey():
     keys = data.get_keyboard()
     for row in keys:
         try:
-            temp = InlineKeyboardButton(
-                text=row[0], callback_data=row[0])
+            temp = InlineKeyboardButton(text=row[0], callback_data=row[0])
             categories.insert(temp)
         except:
             print("Error in import inline-keyboard")
@@ -69,8 +91,7 @@ def getNewKey():
     keys = data.get_keyboard()
     for row in keys:
         try:
-            temp = InlineKeyboardButton(
-                text=row[0], callback_data=row[0])
+            temp = InlineKeyboardButton(text=row[0], callback_data=row[0])
             categories.insert(temp)
         except:
             print("Error in import inline-keyboard")
@@ -83,8 +104,7 @@ def get_girls_key(title):
     Girl = InlineKeyboardMarkup(row_width=2)
     girls = data.GET_GIRLS_INLINE_KEY(title)
     for i in girls:
-        temp = InlineKeyboardButton(
-            text=(i[0]), callback_data=i[0])
+        temp = InlineKeyboardButton(text=(i[0]), callback_data=i[0])
         Girl.add(temp)
     Girl.row(back)
     return Girl
@@ -94,8 +114,9 @@ def buy_menu(isUrl=True, url="", bill=""):
     qiwiMenu = InlineKeyboardMarkup(row_width=1)
     if isUrl:
         qiwiMenu.insert(InlineKeyboardButton(text="Ссылка на оплату", url=url))
-    qiwiMenu.insert(InlineKeyboardButton(
-        text="Проверить оплату", callback_data="check_"+bill))
+    qiwiMenu.insert(
+        InlineKeyboardButton(text="Проверить оплату", callback_data="check_" + bill)
+    )
     return qiwiMenu
 
 
