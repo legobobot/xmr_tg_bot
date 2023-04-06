@@ -14,7 +14,7 @@ back = InlineKeyboardButton(text="Назад", callback_data="category", row_wid
 # ----------Обычные клавиши---------------
 help = KeyboardButton("✅ Поддержка ✅")
 inline = KeyboardButton("🛒 Товар")
-preview_send = KeyboardButton("🔥🔥🔥 Халявные Нюдсы 🔥🔥🔥")
+preview_send = KeyboardButton("🔥🔥🔥 Халявные  🔥🔥🔥")
 profile = KeyboardButton("📱 Профиль")
 faq = KeyboardButton("ℹ️ FAQ")
 balans = KeyboardButton("💰 Пополнить баланс")
