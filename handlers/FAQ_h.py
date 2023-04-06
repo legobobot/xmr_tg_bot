@@ -18,7 +18,7 @@ keyboard = InlineKeyboardMarkup(row_width=1).add(
 )
 # button_projects-------------------------
 free_group = InlineKeyboardButton(
-    text="🔞 Отборный СОК", url="https://t.me/otborniy_SOK"
+    text="🔞 ", url="https://t.me/otborniy_SOK"
 )
 VIP_group = InlineKeyboardButton(
     text="❇️ VIP Группа", url="https://t.me/Otbotniy_SOK_VIP_bot"
