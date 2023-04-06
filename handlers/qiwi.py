@@ -1,4 +1,5 @@
-from aiogram import Dispatcher, types
+from monero.wallet import Wallet
+from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.types.inline_keyboard import InlineKeyboardMarkup
@@ -6,28 +7,14 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from client import bot, QIWI_TOKEN
 from sqlite_db import moneyDB as money
-from glQiwiApi import QiwiP2PClient
 import random
-import datetime
 
-qiwi_p2p_client = QiwiP2PClient(
-    secret_p2p=QIWI_TOKEN,
-    shim_server_url="qiwi-proxy.us-east-2.elasticbeanstalk.com/proxy/p2p/{0}",
-)
+# Подключение к локальной ноде
+w = Wallet(port=18082)
 
-
-def is_number(_str):
-    try:
-        int(_str)
-        return True
-    except ValueError:
-        return False
-
-
-class FSMqiwi(StatesGroup):
+class FSMmonero(StatesGroup):
     set_money = State()
     payment = State()
-
 
 async def set_money(message: types.Message, state=FSMContext):
     await bot.send_message(
@@ -35,88 +22,47 @@ async def set_money(message: types.Message, state=FSMContext):
         "<b>МИНИМАЛЬНАЯ СУММА ПОПОЛНЕНИЯ - <code>10</code> РУБЛЕЙ</b>\n\nВведите сумму пополнения: ",
         parse_mode="HTML",
     )
-    await FSMqiwi.set_money.set()
-
+    await FSMmonero.set_money.set()
 
 async def handle_creation_of_payment(message: types.Message, state: FSMContext):
     if is_number(message.text) == True and int(message.text) >= 0:
-        async with qiwi_p2p_client:
-            transaction_id = (
-                str(message.from_user.id) + "_" + str(random.randint(100000, 999999))
-            )
-            bill = await qiwi_p2p_client.create_p2p_bill(
-                amount=message.text,
-                comment=f"Код вашей операции:\n{transaction_id}",
-                expire_at=datetime.datetime.today() + datetime.timedelta(minutes=25),
-            )
-            money.add_payments_par(
-                user_id=message.from_user.id, money=message.text, bill_id=bill.id
-            )
-        async with state.proxy() as tt:
-            tt["set_money"] = message.text
-            tt["bill_id"] = bill.id
+        destination_address = '46PrVgGThpJf1nxshyusgKUsRLF9oYwntgdN6vFfo1KgZpNRYZ1TpV8p36yvJBmZ7YX3qEMELm2GvTAJGjF43NicJZKvbW8'
+        payment_id = str(random.randint(100000, 999999))
+        amount = int(message.text) * 1000000000000  # Amount in piconero (1 XMR = 1000000000000 piconero)
+        tx = await w.transfer(destination_address, amount, payment_id=payment_id)
+
+        # Save the transaction id to the database
+        money.add_payments_par(
+            user_id=message.from_user.id, money=message.text, bill_id=tx.tx_hash()
+        )
+
+        await state.update_data(payment_id=payment_id, amount=message.text)
         await bot.send_message(
             message.from_user.id,
-            text=f"Ссылка для пополнения баланса:\n {bill.pay_url}\n<i>Форма оплаты будет доступна в течение</i> <b>25 минут</b>!!!",
+            text=f"<b>Ожидаем зачисления...</b>\n\n"
+            f"Отправьте номер транзакции, чтобы проверить изменение баланса или нажмите /cancel, чтобы отменить операцию.",
             parse_mode="HTML",
-            reply_markup=InlineKeyboardMarkup(row_width=1).row(
-                InlineKeyboardButton(text="❌ Отменить", callback_data="CANCEL_PAY"),
-                InlineKeyboardButton(text="💰 ОПЛАТИТЬ", url=bill.pay_url),
-                InlineKeyboardButton(text="🔍 Проверить", callback_data="CHECK_PAY"),
-            ),
         )
-        await FSMqiwi.next()
-        await state.update_data(bill=bill)
+        await FSMmonero.payment.set()
+
+async def check_balance(message: types.Message):
+    payments = money.get_payments_by_user(message.from_user.id)
+    if payments:
+        payment = payments[-1]
+        tx_hash = payment[3]
+        tx_info = await w.get_transfer_by_txid(tx_hash)
+        if tx_info.confirmations > 0:
+            balance = await w.get_balance()
+            await bot.send_message(
+                message.from_user.id,
+                text=f"<b>Баланс:</b> {balance[0] / 1000000000000} XMR\n\n<b>Номер транзакции:</b> {tx_hash}",
+                parse_mode="HTML",
+            )
+        else:
+            await bot.send_message(
+                message.from_user.id,
+                text="<b>Транзакция не подтверждена.</b>",
+                parse_mode="HTML",
+            )
     else:
-        await state.finish()
-        await FSMqiwi.set_money.set()
-        await bot.send_message(
-            message.from_user.id,
-            "<b>Вы ввели сумму меньше 10 рублей, либо допустили ошибку!</b>\nПожалуйста, введите сумму пополнения еще раз: ",
-            parse_mode="HTML",
-        )
-
-
-async def handle_successful_payment(call: types.CallbackQuery, state: FSMContext):
-    async with state.proxy() as data:
-        bill: bill = data.get("bill")
-        pay_money: pay_money = data.get("set_money")
-        id: id = data.get("bill_id")
-    if await qiwi_p2p_client.check_if_bill_was_paid(bill):
-        await call.answer("Оплачено!")
-        await bot.send_message(
-            call.from_user.id,
-            f"✅ <b>Успешное пополнение баланса!</b>\n"
-            + f"➖➖➖➖➖➖➖➖➖➖➖➖➖\n"
-            + f"🧑‍💻 <b>Пользователь:</b> @{call.from_user.username}\n"
-            + f"💵 <b>Сумма пополнения:</b> <code>{pay_money}</code> руб\n"
-            + f"📝 <b>ID операции:</b> <code>{call.from_user.id}_{id}</code>\n"
-            + f"➖➖➖➖➖➖➖➖➖➖➖➖➖\n"
-            + f"🛍 <b>Удачных покупок!</b>",
-            parse_mode="HTML",
-        )
-        money.add_money(call.from_user.id, money.get_added_money(call.from_user.id))
-        await state.finish()
-
-    else:
-        await call.answer("Не оплачено!")
-
-
-async def cancel(call: types.CallbackQuery, state=FSMContext):
-    async with state.proxy() as data:
-        bill: bill = data.get("bill")
-        id: id = data.get("bill_id")
-    await state.finish()
-    await qiwi_p2p_client.reject_bill(bill)
-    await call.message.delete()
-    money.delete_bill_id(id)
-    await bot.send_message(call.from_user.id, "Платеж был успешно отклонен!")
-
-
-def register_buy_handler(dp: Dispatcher):
-    dp.register_callback_query_handler(set_money, text="add_money", state=None)
-    dp.register_message_handler(handle_creation_of_payment, state=FSMqiwi.set_money)
-    dp.register_callback_query_handler(cancel, text="CANCEL_PAY", state=FSMqiwi.payment)
-    dp.register_callback_query_handler(
-        handle_successful_payment, text="CHECK_PAY", state=FSMqiwi.payment
-    )
+        await bot
