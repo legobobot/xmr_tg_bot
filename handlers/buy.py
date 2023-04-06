@@ -21,7 +21,7 @@ async def process_buy_command(call: types.CallbackQuery):
         money.minus_money(call.from_user.id, girl)
         await bot.send_message(call.from_user.id, "<b>Ваша покупка была успешно совершена!</b>", parse_mode='HTML')
         await bot.send_message(call.from_user.id, "<i>Загрузка файла....</i>", parse_mode='HTML')
-        await bot.send_document(call.from_user.id, document=money.get_file(call.from_user.id), caption="<b>Ваш архив был успешно загружен!</b>\nСпасибо за покупку, дрочите на здоровье😘", parse_mode='HTML')
+        await bot.send_document(call.from_user.id, document=money.get_file(call.from_user.id), caption="<b>Ваш архив был успешно загружен!</b>\n на здоровье😘", parse_mode='HTML')
     else:
         await bot.send_message(call.from_user.id, "На вашем счете недостаточно средств!", reply_markup=key.little_money)
 
